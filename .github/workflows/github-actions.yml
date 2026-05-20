@@ -55,3 +55,36 @@ jobs:
         with:
           name: frontend-coverage-report
           path: front/coverage/
+  sonar-analysis:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs:
+      - backend-tests
+      - frontend-tests
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build backend
+        working-directory: back
+        run: mvn clean verify
+      - name: Install frontend deps
+        working-directory: front
+        run: npm ci
+      - name: Generate frontend coverage
+        working-directory: front
+        run: npm run test -- --watch=false --code-coverage --browsers=ChromeHeadless
+      - name: Sonar Scan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
