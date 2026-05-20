@@ -85,6 +85,6 @@ jobs:
         working-directory: front
         run: npm run test -- --watch=false --code-coverage --browsers=ChromeHeadless
       - name: Sonar Scan
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
