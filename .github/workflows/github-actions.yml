@@ -88,3 +88,52 @@ jobs:
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  docker-build-push:
+    name: Build & Push Docker Images
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs:
+      - backend-tests
+      - frontend-tests
+      - sonar-analysis
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Login Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 11
+      - name: Build backend jar
+        working-directory: back
+        run: mvn clean package -DskipTests
+      - name: Build backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./back
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:${{ github.sha }}
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build Angular app
+        working-directory: front
+        run: |
+          npm ci
+          npm run build
+      - name: Build frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./front
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-front:${{ github.sha }}
