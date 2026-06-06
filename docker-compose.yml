@@ -1,0 +1,12 @@
+services:
+  backend:
+    image: mathmust/bobapp-back:latest
+    ports:
+      - "8080:8080"
+
+  frontend:
+    image: mathmust/bobapp-front:latest
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
