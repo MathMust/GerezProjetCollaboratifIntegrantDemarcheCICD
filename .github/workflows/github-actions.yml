@@ -17,7 +17,7 @@ jobs:
         working-directory: back
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
@@ -27,7 +27,7 @@ jobs:
       - name: Run backend tests
         run: mvn clean test
       - name: Upload JaCoCo coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: backend-jacoco-report
           path: back/target/site/jacoco/
@@ -39,9 +39,9 @@ jobs:
         working-directory: front
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
           cache: npm
@@ -51,7 +51,7 @@ jobs:
       - name: Run Angular tests with coverage
         run: npm run test
       - name: Upload frontend coverage report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: frontend-coverage-report
           path: front/coverage/
@@ -63,7 +63,7 @@ jobs:
       - frontend-tests
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Setup Java
@@ -72,7 +72,7 @@ jobs:
           distribution: temurin
           java-version: 11
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: Build backend
@@ -103,7 +103,7 @@ jobs:
       - sonar-analysis
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Login Docker Hub
         uses: docker/login-action@v3
         with:
@@ -126,7 +126,7 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/bobapp-back:${{ github.sha }}
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22
       - name: Build Angular app
